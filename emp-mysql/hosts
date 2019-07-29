@@ -1,9 +1,0 @@
-[mysql]
-mysql_server1 ansible_host=10.2.1.202
-
-[mysql:vars]
-ansible_ssh_user=ubuntu
-ansible_python_interpreter=/usr/bin/python3
-ansible_ssh_private_key_file=/tmp/ubuntu.pem
-mysql_root_password=root
-db_name=db_emp
