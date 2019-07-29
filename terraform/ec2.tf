@@ -247,6 +247,11 @@ resource "aws_instance" "bastion" {
 #      "sudo apt-get install ansible -y",
 #    ]
   }
+  provisioner "remote-exec" {
+    inline = [
+      "chmod 600 /tmp/ubuntu.pem",
+    ]
+  }
   connection {
     type     = "ssh"
     user     = "ubuntu"
