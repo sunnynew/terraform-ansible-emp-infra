@@ -233,6 +233,7 @@ resource "aws_instance" "bastion" {
     source      = "scripts/ubuntu.pem"
     destination = "/tmp/ubuntu.pem"
   }
+#Configure Ansible on bastion host.
   provisioner "remote-exec" {
     inline = [
       "chmod +x /tmp/ansible.sh",
