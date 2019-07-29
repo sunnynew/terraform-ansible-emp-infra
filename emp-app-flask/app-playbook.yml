@@ -1,0 +1,84 @@
+# Ansible playbook for deploying a Flask app
+---
+# Install system apt packages
+- hosts: webservers
+  become: yes
+  become_method: sudo
+  gather_facts: yes
+
+  tasks:
+  - name: ubuntu | Updating the package database
+    apt: update_cache=yes
+    ignore_errors: True
+
+  - name: python | Install required packages
+    apt:
+      name: ['python3-pip','python3-dev','python3-venv','python3-software-properties','nginx']
+      state: latest
+
+# Install app, please don't run below tasks with become sudo
+- hosts: webservers
+  tasks:
+  - name: git | Clone repo
+    git:
+      repo: 'https://github.com/sunnynew/python-emp-flask.git'
+      dest: /home/{{ ansible_ssh_user }}/{{ app_name }}
+      update: yes
+
+  - name: python | Install modules in a virtualenv
+    pip:
+      requirements: /home/{{ ansible_ssh_user }}/{{ app_name }}/requirements.txt
+      virtualenv: /home/{{ ansible_ssh_user }}/{{ app_name }}/env
+      virtualenv_command: /usr/bin/python3.6 -m venv
+
+# Configure app systemd service and nginx
+- hosts: webservers
+  become: yes
+  become_method: sudo
+  tasks:
+  - name: service | Copy template systemd service config
+    copy: remote_src=True src=/home/{{ ansible_ssh_user }}/{{ app_name }}/service dest=/etc/systemd/system/{{ app_name }}.service
+
+  - name: service | Start systemd app service
+    systemd: name={{ app_name }}.service state=restarted enabled=yes
+
+  - name: nginx | Template nginx site config
+    file:
+      src: /home/{{ ansible_ssh_user }}/{{ app_name }}/nginx
+      dest: /etc/nginx/sites-available/{{ app_name }}
+      state: link
+      force: yes
+
+  - name: nginx | Remove default nginx site config
+    file: path=/etc/nginx/sites-enabled/default state=absent
+
+  - name: nginx | Enable nginx site
+    file:
+      src: /etc/nginx/sites-available/{{ app_name }}
+      dest: /etc/nginx/sites-enabled/default
+      state: link
+      force: yes
+
+  - name: nginx | Restart nginx
+    systemd: name=nginx state=restarted enabled=yes
+
+  - name: network | Open firewall for nginx
+    ufw:
+      rule: allow
+      name: Nginx Full
+
+# Verify the app is working
+- hosts: webservers
+  tasks:
+  - name: web | Get url
+    get_url:
+      url: http://localhost/health
+      dest: /tmp/health
+
+  - name: web | Read page
+    shell: cat /tmp/health
+    register: html_contents
+
+  - name: web | Check for running string
+    when: html_contents.stdout.find('running') != -1
+    debug: msg="App is running successfully!"
