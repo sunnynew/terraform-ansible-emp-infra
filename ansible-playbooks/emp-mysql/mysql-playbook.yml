@@ -41,6 +41,7 @@
     notify:
     - restart mysql
 
+#Imp to use `login_unix_socket` as MySQL user is set to authenticate using the auth_socket initially
   - name: mysql | Update mysql root password and allow listen from external hosts
     become: true
     mysql_user: 
