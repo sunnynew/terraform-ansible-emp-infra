@@ -1,4 +1,3 @@
 # Automate infra for python flask app using Terraform and Ansible
 
-use 
-----
+Use `curl` or `postman` to Insert, update, delete records.
