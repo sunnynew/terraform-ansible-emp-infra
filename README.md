@@ -5,11 +5,11 @@
 - Region: us-east-2
 
  - Infra created by Terraform 
-	- VPC:  Multi AZ public and private subnet, NAT, different security group etc..
+	- VPC:  Multi AZ, public and private subnet, NAT, different security groups etc..
 	- ALB: target group, launch config, autoscaling policies
-	- EC2: As per current setting, we will have 1 EC2 in ASG [Private Subnet]
-	- Bastion: used as ansible, Ansible is auto configure using a bash script executed using provisioner [Public Subnet]
-	- MySQL: database server, configured using Ansible playbook. [Private Subnet]
+	- EC2: App servers, launched in ASG [Private Subnet]
+	- Bastion: used as ansible host, Ansible is auto configure using a bash script executed using provisioner [Public Subnet]
+	- MySQL: Database server, configured using Ansible playbook. [Private Subnet]
 
 Prerequisites:
   - terraform
