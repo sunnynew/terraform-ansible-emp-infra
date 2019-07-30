@@ -39,9 +39,9 @@ Steps to create infrastructure on AWS:
 
 4). Copy .pem file under scripts/ folder
 
-5). terraform init
+5). `terraform init`
 
-6). terraform apply
+6). `terraform apply`
 
 7). Save ALB endpoint, will use this to access our flask application.
 
@@ -67,7 +67,8 @@ Steps to setup application and database using Ansible
 
 4). `ansible-playbook mysql-playbook.yml`
 
-- Flask application
+- Employee Python Flask Application
+
 1). Git clone https://github.com/sunnynew/terraform-ansible-emp-infra.git [skip if you already cloned]
 
 2). cd ansible-playbooks/emp-app-flask/
@@ -91,8 +92,9 @@ Application EndPoints:
 Use `curl` or `postman` to Insert, update, delete records.
 
 Curl commands for reference:
-——————————————
+---------------------------
 Insert new record
+
 `curl -X POST http://<ALB>/add -H 'Authorization: Basic dXNlcm5hbWU6cGFzc3dvcmQ='  -H 'Content-Type: application/json' -d '{
 	"userId":"Raj",
 	"jobTitleName":"Developer",
@@ -106,6 +108,7 @@ Insert new record
 }'`
 
 Update record
+
 `curl -X PUT http://<ALB>/add -H 'Authorization: Basic dXNlcm5hbWU6cGFzc3dvcmQ='  -H 'Content-Type: application/json' -d '{
 	"userId":"Raj",
 	"jobTitleName":"Developer",
@@ -119,6 +122,7 @@ Update record
 }'`
 
 Delete Record
+
 `curl -X DELETE http://<ALB>/delete/E3 -H 'Authorization: Basic dXNlcm5hbWU6cGFzc3dvcmQ='`
 
 
