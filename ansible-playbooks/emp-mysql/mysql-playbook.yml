@@ -61,19 +61,6 @@
     notify:
     - restart mysql
 
-  - name: mysql | Check if DB exists
-    shell: mysql --user=root --password={{ mysql_root_password }} -e 'SHOW DATABASES;' | grep {{ db_name }}
-    register: dbstatus
-    ignore_errors: True
-
-  - name: mysql | Drop database
-    mysql_db:
-      name: '{{ db_name }}'
-      login_user: root
-      login_password: '{{ mysql_root_password }}'
-      state: absent
-    when: dbstatus.rc == 0
-
   - name: mysql | Create database
     mysql_db:
       name: '{{ db_name }}'
@@ -81,7 +68,7 @@
       login_password: '{{ mysql_root_password }}'
       state: present
 
-  - name: mysql | Copy create table file
+  - name: mysql | Copy create table dump file
     copy:
       src: create_table.sql
       dest: /tmp

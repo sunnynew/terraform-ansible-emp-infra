@@ -1,8 +1,9 @@
 [webservers]
-webserver1 ansible_host=10.2.1.200
+webserver1 ansible_host=10.2.9.133
 
 [webservers:vars]
 ansible_ssh_user=ubuntu
 app_name=python-emp-flask
+mysql_server=10.2.1.120
 ansible_python_interpreter=/usr/bin/python3
 ansible_ssh_private_key_file=/tmp/ubuntu.pem

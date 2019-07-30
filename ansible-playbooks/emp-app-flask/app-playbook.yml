@@ -16,6 +16,16 @@
       name: ['python3-pip','python3-dev','python3-venv','python3-software-properties','nginx']
       state: latest
 
+#Add mysql server hosts entry      
+  - name: network | Edit /etc/hosts file for MySQL connection
+    lineinfile:
+      dest: /etc/hosts
+      line: '{{ item }}'
+      state: present
+      insertafter: EOF
+    with_items:
+      - '{{ mysql_server }} mysql_server'
+
 # Install app, please don't run below tasks with become sudo
 - hosts: webservers
   tasks:
