@@ -16,16 +16,6 @@
       name: ['python3-pip','python3-dev','python3-venv','python3-software-properties','nginx']
       state: latest
 
-#Add mysql server hosts entry      
-  - name: network | Edit /etc/hosts file for MySQL connection
-    lineinfile:
-      dest: /etc/hosts
-      line: '{{ item }}'
-      state: present
-      insertafter: EOF
-    with_items:
-      - '{{ mysql_server }} mysql_server'
-
 # Install app, please don't run below tasks with become sudo
 - hosts: webservers
   tasks:
@@ -41,12 +31,24 @@
       virtualenv: /home/{{ ansible_ssh_user }}/{{ app_name }}/env
       virtualenv_command: /usr/bin/python3.6 -m venv
 
+  - name: env | Add DB env variables [gunicorn]
+    lineinfile:
+      dest: /home/{{ ansible_ssh_user }}/{{ app_name }}/.env_vars
+      line: '{{ item }}'
+      state: present
+      insertafter: EOF
+    with_items:
+      - 'MYSQL_DATABASE_HOST={{ mysql_server }}'
+      - 'MYSQL_DATABASE_DB={{ mysql_db }}'
+      - 'MYSQL_DATABASE_USER={{ mysql_user }}'
+      - 'MYSQL_DATABASE_PASSWORD={{ mysql_password }}'
+
 # Configure app systemd service and nginx
 - hosts: webservers
   become: yes
   become_method: sudo
   tasks:
-  - name: service | Copy template systemd service config
+  - name: service | Copy template systemd gunicorn service config
     copy: remote_src=True src=/home/{{ ansible_ssh_user }}/{{ app_name }}/service dest=/etc/systemd/system/{{ app_name }}.service
 
   - name: service | Start systemd app service
@@ -92,3 +94,4 @@
   - name: web | Check for running string
     when: html_contents.stdout.find('running') != -1
     debug: msg="App is running successfully!"
+
